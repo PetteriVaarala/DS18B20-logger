@@ -3,6 +3,7 @@ import glob
 import os
 import subprocess
 import time
+from influxdb import InfluxDBClient
 
 hostname = os.uname()[1]
 # Device directories
@@ -43,4 +44,19 @@ for device in devices:
     # print log
     # Oct 25 15:24:36 raspberry1 DS18B20-logger: 28-00000729d3be 23.812 C
     print '{0} {1}: {2} {3} C'.format(date,hostname,sensor,temp)
+
+    client = InfluxDBClient(host='109.204.153.237', port=8086, database='Temperatures')
+    data = [
+        {
+            "measurement": "temp",
+            "tags": {
+                'device':hostname,
+                'sensor':sensor
+            },
+            "fields": {
+                'temp':temp
+            }
+        }
+    ]
+    client.write_points(data)
 
