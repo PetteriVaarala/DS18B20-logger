@@ -3,7 +3,23 @@ import glob
 import os
 import subprocess
 import time
+import ConfigParser
+import inspect
 from influxdb import InfluxDBClient
+
+# Get path for this script
+script_filename = inspect.getfile(inspect.currentframe())   # get filename (usually with path)
+script_path = os.path.dirname(script_filename)              # get relative path
+path = os.path.realpath(script_path) + "/"                  # get real path
+
+# Get configs
+config = ConfigParser.ConfigParser()
+config.read(path + 'DS18B20-logger.conf')
+influx_host = config.get('influxdb', 'host')
+influx_port = config.get('influxdb', 'port')
+influx_database = config.get('influxdb', 'database')
+influx_username = config.get('influxdb', 'username')
+influx_password = config.get('influxdb', 'password')
 
 hostname = os.uname()[1]
 # Device directories
@@ -45,7 +61,7 @@ for device in devices:
     # Oct 25 15:24:36 raspberry1 DS18B20-logger: 28-00000729d3be 23.812 C
     print '{0} {1}: {2} {3} C'.format(date,hostname,sensor,temp)
 
-    client = InfluxDBClient(host='109.204.153.237', port=8086, database='Temperatures')
+    client = InfluxDBClient(host=influx_host, port=influx_port, database=influx_database, username=influx_username, password=influx_password)
     data = [
         {
             "measurement": "temp",
