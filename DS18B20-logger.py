@@ -20,6 +20,8 @@ influx_port = config.get('influxdb', 'port')
 influx_database = config.get('influxdb', 'database')
 influx_username = config.get('influxdb', 'username')
 influx_password = config.get('influxdb', 'password')
+location = config.get('tags', 'location')
+address = config.get('tags', 'address')
 
 hostname = os.uname()[1]
 # Device directories
@@ -67,7 +69,9 @@ for device in devices:
             "measurement": "temp",
             "tags": {
                 'device':hostname,
-                'sensor':sensor
+                'sensor':sensor,
+		'location':location,
+		'address':address
             },
             "fields": {
                 'temp':temp
